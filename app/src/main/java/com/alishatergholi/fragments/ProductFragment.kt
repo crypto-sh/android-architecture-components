@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.alishatergholi.R
@@ -14,9 +13,10 @@ import com.alishatergholi.databinding.FragmentProductBinding
 import com.alishatergholi.viewModel.ProductViewModel
 
 
+private const val KEY_PRODUCT_ID = "product_id"
 
 /**
- * A simple [Fragment] subclass.
+ * A simple [BaseFragment] subclass.
  * Activities that contain this fragment must implement the
  * to handle interaction events.
  * Use the [ProductFragment.newInstance] factory method to
@@ -25,13 +25,14 @@ import com.alishatergholi.viewModel.ProductViewModel
  */
 class ProductFragment : BaseFragment() {
 
+    private var productId : Int = 0
+
     private var adapter : CommentAdapter?         = null
 
     private var binding : FragmentProductBinding? = null
 
-    private val KEY_PRODUCT_ID = "product_id"
-
     companion object {
+
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
@@ -40,6 +41,21 @@ class ProductFragment : BaseFragment() {
          */
         @JvmStatic
         fun newInstance() = ProductFragment()
+
+
+        @JvmStatic
+        fun newInstance(productId : Int) = ProductFragment().apply {
+            arguments = Bundle().apply {
+                putInt(KEY_PRODUCT_ID,productId)
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (arguments != null){
+            productId = arguments!!.getInt(KEY_PRODUCT_ID)
+        }
     }
 
     override fun onCreateView(
@@ -55,9 +71,9 @@ class ProductFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        //arguments!!.getInt(KEY_PRODUCT_ID)
-        var viewModel = ViewModelProviders.of(this, ProductViewModel.Factory(activity!!.application, 1)).get(ProductViewModel::class.java)
-        binding!!.viewModel = viewModel
+        var viewModel = ViewModelProviders.of(this, ProductViewModel.Factory(activity!!.application, productId)).get(ProductViewModel::class.java)
+        binding!!.productViewModel = viewModel
+
         subscribeToModel(viewModel)
     }
 
@@ -66,7 +82,12 @@ class ProductFragment : BaseFragment() {
             adapter!!.setComments(it)
         })
         viewModel.productObservable!!.observe(this, Observer {
-            viewModel.product.set(it)
+            if (it != null) {
+                viewModel.product.set(it)
+                binding!!.isLoading = false
+            }else{
+                binding!!.isLoading = true
+            }
         })
     }
 }

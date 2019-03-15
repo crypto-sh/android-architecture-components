@@ -1,6 +1,12 @@
 <resources>
-    <string name="app_name">mycujoo</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">android architecture</string>
+
+    <string name="search_products_hint">Search Product</string>
+
+    <string name="loading_comments">Loading Comments</string>
+    <string name="loading_products">Loading Products</string>
+    <string name="cd_product_name">Product Name</string>
+    <string name="product_price">Price: $%d</string>
+
 </resources>

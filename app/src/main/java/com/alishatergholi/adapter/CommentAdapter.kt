@@ -3,7 +3,7 @@ package com.alishatergholi.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.alishatergholi.databinding.VerticalItemBinding
+import com.alishatergholi.databinding.CommentItemBinding
 import com.alishatergholi.db.entity.CommentEntity
 
 class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
@@ -17,7 +17,7 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = VerticalItemBinding.inflate(inflater,parent,false)
+        val binding  = CommentItemBinding.inflate(inflater,parent,false)
         return  CommentViewHolder(binding)
     }
 
@@ -29,16 +29,10 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() 
         holder.BindData(items.get(position))
     }
 
-    class CommentViewHolder : RecyclerView.ViewHolder {
-
-        var binding : VerticalItemBinding? = null
-
-        constructor(binding : VerticalItemBinding) : super(binding.root){
-            this.binding = binding
-        }
+    class CommentViewHolder(private val binding: CommentItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun BindData(item : CommentEntity) {
-            binding!!.item = item
+            binding.item = item
         }
     }
 }

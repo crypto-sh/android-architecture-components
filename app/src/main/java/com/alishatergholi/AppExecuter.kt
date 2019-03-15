@@ -5,7 +5,6 @@ import android.os.Looper
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-
 class AppExecuter constructor(var diskIO: Executor, var networkIO: Executor, var mainThread: Executor) {
 
     constructor() : this(

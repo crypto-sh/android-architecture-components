@@ -33,11 +33,13 @@ class DataRepository {
     constructor(database: AppDataBase) {
         this.database = database
         this.products.addSource(database.productDao().loadAllProducts(), Observer {
-
-            if (database.getDataBaseCreated().value != null) {
+            if (it != null){
                 products.value = it
             }
         })
+    }
+    fun searchProduct(query : String) : LiveData<List<ProductEntity>>? {
+        return null
     }
 
     fun getProducts(): LiveData<List<ProductEntity>> {

@@ -1,6 +1,6 @@
 package com.alishatergholi
 
-import androidx.test.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
 
 import org.junit.Test
@@ -15,10 +15,12 @@ import org.junit.Assert.*
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
+
     @Test
     fun useAppContext() {
         // Context of the app under test.
-        val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("com.testmycujoo", appContext.packageName)
+        val appContext = InstrumentationRegistry.getInstrumentation().context
+        assertEquals("com.alishatergholi", appContext.packageName)
     }
+
 }

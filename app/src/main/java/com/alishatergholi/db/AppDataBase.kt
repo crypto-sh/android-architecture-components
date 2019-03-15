@@ -14,23 +14,20 @@ import com.alishatergholi.db.dao.CommentDao
 import com.alishatergholi.db.dao.ProductDao
 import com.alishatergholi.db.entity.CommentEntity
 import com.alishatergholi.db.entity.ProductEntity
-import com.alishatergholi.helper.LogHelper
 import com.alishatergholi.utils.DateConvert
 
 
-@Database(entities = arrayOf(CommentEntity::class, ProductEntity::class)  , version = 1)
+@Database(entities = arrayOf(CommentEntity::class, ProductEntity::class), version = 1, exportSchema = false)
 @TypeConverters(DateConvert::class)
 abstract class AppDataBase : RoomDatabase() {
 
-    abstract fun commentDao() : CommentDao
+    abstract fun commentDao(): CommentDao
 
-    abstract fun productDao() : ProductDao
+    abstract fun productDao(): ProductDao
 
     private var mIsDatabaseCreated = MutableLiveData<Boolean>()
 
     companion object {
-
-        var logHelper = LogHelper(this::class.java)
 
         @VisibleForTesting
         val DATABASE_NAME = "mycujoo.db"
@@ -38,35 +35,40 @@ abstract class AppDataBase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDataBase? = null
 
-        fun getInstance(context: Context, executor: AppExecuter, testMode: Boolean): AppDataBase =
+        fun getInstance(context: Context, executor: AppExecuter?, testMode: Boolean): AppDataBase =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: buildDatabase(context, executor, testMode).also {
                     INSTANCE = it
                 }
             }
 
-        private fun buildDatabase(context: Context, executor: AppExecuter, testMode: Boolean): AppDataBase {
+        private fun buildDatabase(context: Context, executor: AppExecuter?, testMode: Boolean): AppDataBase {
             if (testMode) {
-                return Room.inMemoryDatabaseBuilder(context.applicationContext, AppDataBase::class.java).build()
+                return Room
+                    .inMemoryDatabaseBuilder(context.applicationContext, AppDataBase::class.java)
+                    .allowMainThreadQueries()
+                    .build()
             } else {
                 return Room.databaseBuilder(context.applicationContext, AppDataBase::class.java, DATABASE_NAME)
                     .addCallback(object : Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
-                            executor.diskIO.execute {
-                                val database = AppDataBase.getInstance(context,executor,testMode)
+                            executor!!.diskIO.execute {
+                                val database = AppDataBase.getInstance(context, executor, testMode)
                                 val products = DataGenerator.generateProducts()
                                 val comments = DataGenerator.generateCommentsForProducts(products)
-                                database.insertData(products,comments)
+                                database.insertData(products, comments)
                                 database.updateDataBaseCreated(context)
                             }
                         }
-                    }).allowMainThreadQueries().build()
+                    })
+                    .allowMainThreadQueries()
+                    .build()
             }
         }
     }
 
-    fun insertData(products : List<ProductEntity>, comments: List<CommentEntity>){
+    fun insertData(products: List<ProductEntity>, comments: List<CommentEntity>) {
         this.runInTransaction {
             productDao().insertAll(products)
             commentDao().insertAll(comments)
@@ -83,7 +85,7 @@ abstract class AppDataBase : RoomDatabase() {
         mIsDatabaseCreated.postValue(true)
     }
 
-    fun getDataBaseCreated() : LiveData<Boolean> {
+    fun getDataBaseCreated(): LiveData<Boolean> {
         return mIsDatabaseCreated
     }
 

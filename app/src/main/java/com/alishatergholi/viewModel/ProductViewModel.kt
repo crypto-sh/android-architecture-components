@@ -28,10 +28,7 @@ class ProductViewModel(repository: DataRepository, productId: Int) : ViewModel()
         ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-
             val repository = (application as? BaseApp)?.respository
-
-
             return ProductViewModel(repository!!, productId) as T
         }
     }

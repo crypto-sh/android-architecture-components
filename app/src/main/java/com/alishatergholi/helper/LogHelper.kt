@@ -71,13 +71,13 @@ class LogHelper(cls: Class<*>) {
     }
 
     private fun log(tag: String, level: Int, t: Throwable?, messages: String) {
-        var msg: String = ""
+        var msg: String
         if (General.methods().StringIsEmptyOrNull(messages)) {
             if (t == null) {
                 msg = messages
                 Log.println(level, tag, msg)
             } else {
-                var sb = StringBuilder()
+                val sb = StringBuilder()
                 sb.append(messages)
                 sb.append("\n").append(Log.getStackTraceString(t))
                 msg = sb.toString()
